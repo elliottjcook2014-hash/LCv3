@@ -1,0 +1,31 @@
+
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Package LCv3
+        run: |
+          mkdir LCv3
+          cp LCv3.py assembler.py LICENSE LCv3/
+          zip -r LCv3-${GITHUB_REF_NAME}.zip LCv3
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: LCv3-${{ github.ref_name }}.zip
+          generate_release_notes: true
+          prerelease: true
